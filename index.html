@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Break-even-ROAS-Rechner · Lyonic</title>
+<style>
+  :root{
+    --bg:#0f1115; --surface:#171a20; --surface2:#1e222b; --border:#2a2f3a;
+    --text:#f3f5f7; --muted:#9aa3b2; --hint:#6b7280;
+    --accent:#5DCAA5; --warn:#EF9F27; --danger:#E24B4A; --brand:#ffa500;
+    --radius:12px;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6; padding:32px 16px;}
+  .wrap{max-width:760px; margin:0 auto;}
+  .brand{display:flex; align-items:center; gap:10px; margin-bottom:4px;}
+  .brand .dot{width:12px; height:12px; border-radius:50%; background:var(--brand);}
+  .brand b{font-weight:600; letter-spacing:.02em;}
+  h1{font-size:24px; font-weight:600; margin:14px 0 6px;}
+  .sub{color:var(--muted); font-size:15px; margin:0 0 28px;}
+  .inputs{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:18px; margin-bottom:28px;}
+  label{font-size:13px; color:var(--muted); display:flex; justify-content:space-between; margin-bottom:6px;}
+  label span{color:var(--text); font-weight:600;}
+  input[type=range]{width:100%; accent-color:var(--brand); height:4px;}
+  .cards{display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-bottom:24px;}
+  .card{background:var(--surface2); border-radius:var(--radius); padding:16px;}
+  .card .lbl{font-size:13px; color:var(--muted);}
+  .card .val{font-size:26px; font-weight:600; margin:4px 0 2px;}
+  .card .foot{font-size:12px; color:var(--hint);}
+  .panel{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:18px 20px;}
+  .panel .row{display:flex; justify-content:space-between; font-size:13px; color:var(--muted); margin-bottom:10px;}
+  .panel .row b{color:var(--text);}
+  .verdict{font-weight:600;}
+  .gewinn{font-size:15px; margin-top:12px;}
+  .cta{margin-top:24px; text-align:center;}
+  .cta a{display:inline-block; background:var(--brand); color:#1a1205; text-decoration:none;
+    padding:13px 26px; border-radius:var(--radius); font-weight:600; font-size:15px;}
+  .cta p{color:var(--hint); font-size:13px; margin-top:10px;}
+  .disclaimer{color:var(--hint); font-size:12px; margin-top:24px; text-align:center;}
+  .pos{color:var(--accent);} .neg{color:var(--danger);} .warnc{color:var(--warn);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><span class="dot"></span><b>LYONIC</b></div>
+  <h1>Ab welchem ROAS verdienst du wirklich Geld?</h1>
+  <p class="sub">Die meisten Shops steuern auf einen ROAS-Zielwert, den sie aus dem Bauch gewählt haben. Trag deine echten Zahlen ein und sieh sofort, wo dein Break-even liegt – und welchen ROAS du für echten Gewinn brauchst.</p>
+
+  <div class="inputs">
+    <div><label>Ø Warenkorb (brutto) <span id="o-aov">80 €</span></label><input type="range" id="aov" min="20" max="400" step="5" value="80"></div>
+    <div><label>Rohmarge auf Warenkorb <span id="o-marge">40 %</span></label><input type="range" id="marge" min="10" max="80" step="1" value="40"></div>
+    <div><label>Versandkosten (selbst getragen) <span id="o-versand">5 €</span></label><input type="range" id="versand" min="0" max="20" step="0.5" value="5"></div>
+    <div><label>Zahlungs-/Transaktionsgebühr <span id="o-gebuehr">2 %</span></label><input type="range" id="gebuehr" min="0" max="6" step="0.1" value="2"></div>
+    <div><label>Retourenquote <span id="o-retoure">5 %</span></label><input type="range" id="retoure" min="0" max="50" step="1" value="5"></div>
+    <div><label>Gewünschte Gewinnmarge <span id="o-ziel">15 %</span></label><input type="range" id="ziel" min="0" max="40" step="1" value="15"></div>
+  </div>
+
+  <div class="cards">
+    <div class="card"><div class="lbl">Deckungsbeitrag / Bestellung</div><div class="val" id="r-db">19,28 €</div><div class="foot" id="r-dbm">24 % DB-Marge</div></div>
+    <div class="card"><div class="lbl">Break-even-ROAS</div><div class="val warnc" id="r-be">4,15</div><div class="foot">Hier: ±0 € Gewinn</div></div>
+    <div class="card"><div class="lbl">Ziel-ROAS</div><div class="val pos" id="r-ziel">10,99</div><div class="foot" id="r-ziel-sub">für 15 % Gewinn</div></div>
+  </div>
+
+  <div class="panel">
+    <div class="row"><span>Dein aktueller ROAS <b id="o-akt">3,5</b></span><span class="verdict" id="r-verdict"></span></div>
+    <input type="range" id="akt" min="1" max="20" step="0.1" value="3.5">
+    <div class="gewinn" id="r-gewinn"></div>
+  </div>
+
+  <div class="cta">
+    <a id="cta-link" href="https://calendly.com/beneke/google-ads-deep-dive-klon?back=1">Kostenlose Deep-Dive-Analyse buchen</a>
+    <p>30 Min · konkrete Hebel für deinen Account</p>
+  </div>
+
+  <p class="disclaimer">Vereinfachtes Modell auf Bestellebene (DB I): Nettoumsatz = Brutto / 1,19. Ohne Fixkosten &amp; Personal. Dient als Orientierung, nicht als Buchhaltung.</p>
+</div>
+
+<script>
+(function(){
+  const ids=['aov','marge','versand','gebuehr','retoure','ziel','akt'];
+  const el={}; ids.forEach(i=>el[i]=document.getElementById(i));
+  const eur=n=>n.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';
+  const num=n=>n.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});
+  const clean=s=>s.replace(',00','');
+  function calc(){
+    const aov=+el.aov.value, marge=+el.marge.value/100, versand=+el.versand.value,
+          geb=+el.gebuehr.value/100, ret=+el.retoure.value/100, ziel=+el.ziel.value/100, akt=+el.akt.value;
+    document.getElementById('o-aov').textContent=aov+' €';
+    document.getElementById('o-marge').textContent=el.marge.value+' %';
+    document.getElementById('o-versand').textContent=clean(num(+el.versand.value))+' €';
+    document.getElementById('o-gebuehr').textContent=el.gebuehr.value+' %';
+    document.getElementById('o-retoure').textContent=el.retoure.value+' %';
+    document.getElementById('o-ziel').textContent=el.ziel.value+' %';
+    document.getElementById('o-akt').textContent=clean(num(akt));
+    const netto=aov/1.19, rohertrag=netto*marge;
+    const db=(rohertrag - versand - aov*geb)*(1-ret);
+    document.getElementById('r-db').textContent=eur(db);
+    document.getElementById('r-dbm').textContent=Math.round(db/aov*100)+' % DB-Marge';
+    const be = db>0 ? aov/db : Infinity;
+    document.getElementById('r-be').textContent = isFinite(be)? clean(num(be)) : '–';
+    const nenner=db-ziel*aov, zielRoas=nenner>0?aov/nenner:Infinity;
+    document.getElementById('r-ziel').textContent=(db>0&&isFinite(zielRoas)&&zielRoas>0)?clean(num(zielRoas)):'–';
+    document.getElementById('r-ziel-sub').textContent='für '+el.ziel.value+' % Gewinn';
+    const adspend=aov/akt, gewinn=db-adspend;
+    const v=document.getElementById('r-verdict'), g=document.getElementById('r-gewinn');
+    if(gewinn>=0){ v.textContent='profitabel'; v.className='verdict pos';
+      g.innerHTML='Pro Bestellung bleiben nach Werbung <b class="pos">'+eur(gewinn)+'</b> Gewinn ('+eur(adspend)+' Werbekosten).'; }
+    else { v.textContent='Verlust'; v.className='verdict neg';
+      g.innerHTML='Pro Bestellung <b class="neg">'+eur(gewinn)+'</b> – du zahlst bei jedem Verkauf drauf ('+eur(adspend)+' Werbekosten bei nur '+eur(db)+' DB).'; }
+  }
+  ids.forEach(i=>el[i].addEventListener('input',calc));
+  calc();
+})();
+</script>
+</body>
+</html>
